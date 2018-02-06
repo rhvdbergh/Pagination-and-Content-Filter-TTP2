@@ -3,3 +3,5 @@ This is the second project in the Treehouse Techdegree program. It is a paginati
 For extra credit, a search function has been added. 
 
 The project makes use of progressive enhancement / unobtrusive Javascript techniques to make sure the correct info is displayed even if JavaScript is turned off in the browser.
+
+The project also makes use of jQuery.

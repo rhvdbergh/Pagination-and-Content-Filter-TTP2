@@ -13,35 +13,29 @@
 // 
 // The project also makes use of jQuery.
 
-// make an array of all the students in the list
+// construct an array of all the students in the list
 const studentsArray = document.getElementsByClassName('student-item');
 
-// hide all students that are not within the display scope
+function hideAllStudents() {
+    for (let i = 0; i < studentsArray.length; i++) {
+        $(studentsArray[i]).hide();
+    }
+}
+
 // paginationLinkIndex for first ten students = 1
 // this will result in index 0-9 being shown, etc.
-function hideStudents(paginationLinkIndex, array) {
+function displayStudents(paginationLinkIndex, array) {
+
+    hideAllStudents();
+
     let indexStartPos = ((paginationLinkIndex * 10) - 10);
     let indexEndPos = ((paginationLinkIndex * 10) - 1);
     // if the indexEndPos is > than the end of the array, set the end position at the last index point of the array
     if (indexEndPos > array.length - 1) { indexEndPos = array.length - 1; }
 
-    // if the index to be displayed is not at the start of the list, hide all students before that point
-    if (!(indexStartPos === 0)) {
-        for (let i = 0; i < indexStartPos; i++) {
-            $(array[i]).hide();
-        }
-    }
-
     // show the students that are in scope
     for (let i = indexStartPos; i <= indexEndPos; i++) {
         $(array[i]).show();
-    }
-
-    // if the last index to be displayed is not at the end of the students array, hide those student-items that follows
-    if (!(indexEndPos === array.length - 1)) {
-        for (let i = indexEndPos + 1; i < array.length; i++) {
-            $(array[i]).hide();
-        }
     }
 }
 
@@ -65,18 +59,18 @@ function createPaginationButtons(paginationLinkIndex, array) {
     // append HTML string to the page
     $('.page').append(htmlString);
 
-    // add event handlers to all the buttons
-    // first, select all the newly created buttons
-    let $paginationButtons = $('.pagination li');
-    // add the event handlers to each button in the list 
-    for (let i = 0; i <= numButtons - 1; i++) {
-        $($paginationButtons[i]).on('click', (event) => {
+    // add an event handler to the "pagination" div to handle all events on "a" tags
+    $('.pagination').on("click", "a", function(event) {
+        // determine which button was pressed
+        let buttonPressed = $(event.target).parent().index() + 1;
+        // reload the information on the page with the scope of the new button
+        displayStudents(buttonPressed, array);
+        createPaginationButtons(buttonPressed, array);
+    });
 
-            // determine number of button pressed
-            let buttonPressed = $($paginationButtons[i]).index() + 1;
-            hideStudents(buttonPressed, array);
-            createPaginationButtons(buttonPressed, array);
-        });
+    // if there are less than 10 results, remove the pagination links 
+    if (array.length <= 10) {
+        $('.pagination').remove();
     }
 }
 
@@ -85,10 +79,43 @@ function createPaginationButtons(paginationLinkIndex, array) {
 function createSearchBox() {
     let htmlString = '<div class="student-search"><input placeholder="Search for student..."><button>Search</button></div>';
     $('.page-header').append(htmlString);
+
+    // attach event handler to search box
+    $('.student-search button').on('click', (event) => {
+        // retrieve the search string input by user
+        // make sure that the string is in lower case to match student names
+        const searchStr = $('.student-search input').val().toLowerCase();
+
+        // build a new array with only the students that match the search string
+        // by looping through the studentsArray 
+        let searchArray = [];
+        for (let i = 0; i < studentsArray.length; i++) {
+            // note that the student name is contained in h3
+            let studentName = $(studentsArray[i]).find('h3').text();
+
+            // if the search string appears in student name 
+            // add this element to the searchArray
+            if (studentName.indexOf(searchStr) >= 0) {
+                searchArray.push(studentsArray[i]);
+            }
+        }
+
+        // now reload the information in the page with the new array with selected students
+        displayStudents(1, searchArray);
+        createPaginationButtons(1, searchArray);
+
+        // if there were no search results, display a message instead of students
+        if (searchArray.length === 0) {
+            $('.page').append('<h3>No students found ... please try a different search</h3>');
+        }
+
+    });
 }
 
+// --------------------------
+// ON PAGE LOAD
 // at first page load, display only the first ten students
-hideStudents(1, studentsArray);
+displayStudents(1, studentsArray);
 // at first page load, display pagination buttons with first button active
 createPaginationButtons(1, studentsArray);
 createSearchBox();

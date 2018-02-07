@@ -80,7 +80,15 @@ function createPaginationButtons(paginationLinkIndex, array) {
     }
 }
 
+// create a search box at the top of the page, as the last element in the 
+// "page-header" class
+function createSearchBox() {
+    let htmlString = '<div class="student-search"><input placeholder="Search for student..."><button>Search</button></div>';
+    $('.page-header').append(htmlString);
+}
+
 // at first page load, display only the first ten students
 hideStudents(1, studentsArray);
 // at first page load, display pagination buttons with first button active
 createPaginationButtons(1, studentsArray);
+createSearchBox();

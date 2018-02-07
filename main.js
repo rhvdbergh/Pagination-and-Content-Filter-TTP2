@@ -46,14 +46,15 @@ function hideStudents(paginationLinkIndex, array) {
 }
 
 // create the pagination buttons and assign event handlers to them
-function createPaginationButtons(paginationLinkIndex, arrayLength) {
+function createPaginationButtons(paginationLinkIndex, array) {
+
     // if there is an old div with class pagination, remove this from the page 
     if ($('.pagination')) { $('.pagination').remove(); }
 
     // build an HTML string to add to the DOM with the pagination markup
     let htmlString = '<div class="pagination"><ul>';
-    let numButtons = (arrayLength / 10);
-    if (arrayLength % 10 > 0) numButtons++; // to account for the final page, if there are more students than a multiple of ten 
+    let numButtons = (array.length / 10);
+    if (array.length % 10 > 0) numButtons++; // to account for the final page, if there are more students than a multiple of ten 
     for (let i = 1; i <= numButtons; i++) {
         htmlString += '<li><a ';
         if (paginationLinkIndex === i) { htmlString += 'class="active" '; }
@@ -73,8 +74,8 @@ function createPaginationButtons(paginationLinkIndex, arrayLength) {
 
             // determine number of button pressed
             let buttonPressed = $($paginationButtons[i]).index() + 1;
-            hideStudents(buttonPressed, studentsArray);
-            createPaginationButtons(buttonPressed, studentsArray.length);
+            hideStudents(buttonPressed, array);
+            createPaginationButtons(buttonPressed, array);
         });
     }
 }
@@ -82,4 +83,4 @@ function createPaginationButtons(paginationLinkIndex, arrayLength) {
 // at first page load, display only the first ten students
 hideStudents(1, studentsArray);
 // at first page load, display pagination buttons with first button active
-createPaginationButtons(1, studentsArray.length);
+createPaginationButtons(1, studentsArray);
